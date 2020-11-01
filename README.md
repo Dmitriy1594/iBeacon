@@ -1,6 +1,11 @@
 # BLE
 Course project: Электронные ценники
 
+## develop links
+1. [Master](https://github.com/Dmitriy1594/iBeacon)
+1. [pc-develop: create server and admin](https://github.com/Dmitriy1594/iBeacon/tree/pc-develop)
+1. [develop raspberry pi](https://github.com/Dmitriy1594/iBeacon/tree/develop_raspberry_pi)
+
 ## Description
 
 Этот модуль полностью посвящен работе с Raspberry Pi A+.
