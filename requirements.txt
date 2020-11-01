@@ -1,0 +1,14 @@
+certifi==2020.6.20
+chardet==3.0.4
+colorzero==1.1
+forex-python==1.5
+gpiozero==1.5.1
+idna==2.10
+numpy==1.19.3
+Pillow==8.0.1
+pkg-resources==0.0.0
+requests==2.24.0
+RPi.GPIO==0.7.0
+simplejson==3.17.2
+spidev==3.5
+urllib3==1.25.11

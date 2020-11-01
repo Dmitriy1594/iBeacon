@@ -1,0 +1,10 @@
+{
+  "default_currency": "RUB",
+  "default_buttons_currency": [
+    "RUB",
+    "USD",
+    "EUR",
+    "GBP"
+  ],
+  "version": "1604248006.302461"
+}
