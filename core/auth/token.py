@@ -107,7 +107,7 @@ def generate_random_token(length=12 + 2) -> str:
     return token
 
 
-async def api_token_hash(token: str) -> str:
+def api_token_hash(token: str) -> str:
     if is_api_token(token) is False:
         # raise fastapi.HTTPException(status_code=400, detail="It's not a token!")
         raise fastapi.HTTPException(
@@ -115,11 +115,11 @@ async def api_token_hash(token: str) -> str:
             detail=[
                 {
                     "loc": [
-                        "header",
+                        "body",
                         token
                     ],
                     "msg": "It's not a token!",
-                    "type": "type_error.header"
+                    "type": "type_error.body"
                 }
             ]
         )

@@ -33,9 +33,14 @@ from config.settings import PATH_TO_API
 
 from processing.api.imports import (
     help,
+    auth,
+    site_get
 )
 
 models.Base.metadata.create_all(bind=engine)
+
+
+# TODO: теги
 
 app = fastapi.FastAPI(
     debug=DEBUG,
@@ -57,6 +62,27 @@ app.include_router(
     # },
 )
 
+app.include_router(
+    auth.router,
+    # dependencies=[fastapi.Depends(check_token_header)],
+    responses={
+        404: {"description": "Not found"},
+    }
+    #     422: {'description': 'Validation Error', 'model': ValidationErrorModelResponse}
+    # },
+)
+
+app.include_router(
+    site_get.router,
+    # dependencies=[fastapi.Depends(check_token_header)],
+    responses={
+        404: {"description": "Not found"},
+    }
+    #     422: {'description': 'Validation Error', 'model': ValidationErrorModelResponse}
+    # },
+)
+
+# TODO: когда доделаю сайт эти ссылки нужно будет встроить в сайт и сделать возиожность подключения к ним через авторизацию
 
 # OPENAPI
 @app.get(path=f'{PATH_TO_API}', tags=["secret"], include_in_schema=False)
@@ -79,21 +105,3 @@ async def get_documentation():
 @app.get(path='/', tags=["help"], include_in_schema=False)
 async def root():
     return RedirectResponse("/docs")
-
-
-# import uvicorn
-# import multiprocessing as mp
-#
-# from core.routing import app
-#
-# from config.settings import HOST, PORT, DEBUG
-#
-# if __name__ == "__main__":
-#     if DEBUG is True:
-#         uvicorn.run("app:app", host=HOST, port=PORT, log_level="trace", debug=DEBUG,
-#                     workers=1, reload=True)
-#     else:
-#         uvicorn.run("app:app", host=HOST, port=PORT, log_level="info",
-#                     workers=mp.cpu_count())
-
-

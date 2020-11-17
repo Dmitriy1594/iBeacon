@@ -75,14 +75,15 @@ if __name__ == "__main__":
     make_token_files(
         team='cbt',
         comments=[
-            "Dmitriy Romakin token",
-            "Boris Zverkov token",
+            "Dmitriy Romakin password",
+            "Boris Zverkov password",
             "Dev token",
             "DevOps token",
             "Admin token",
             "Developer token",
             "Tester token",
             "Maintainer token",
+            "Site token",
 
         ],
         private_path='./../config/tokens/tokens.{team}.{date}.private.json',

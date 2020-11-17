@@ -17,71 +17,47 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
-class ItemBase(BaseModel):
-    title: str
-    description: Optional[str] = None
-
-
-class ItemCreate(ItemBase):
-    pass
-
-
-class Item(ItemBase):
-    id: int
-    owner_id: int
-
-    class Config:
-        orm_mode = True
-
-
 class UserBase(BaseModel):
-    email: str
+    login: str
 
 
 class UserCreate(UserBase):
     password: str
 
 
+# class UserPassword(UserCreate):
+#     admin_token: str
+
+
 class User(UserBase):
     id: int
-    is_active: bool
-    items: List[Item] = []
 
     class Config:
         orm_mode = True
 
 
-# class AdminBase(BaseModel):
-#     login: str
-#
-#
-# class AdminCreate(AdminBase):
-#     password: str
-#
-#
-# class Admin(AdminBase):
-#     id: int
-#     is_active: bool
-#
-#     class Config:
-#         orm_mode = True
-#
-#
-# class PIBase(BaseModel):
-#     name: str
-#     price: float
-#     currencies: str
-#     count_visitors: int
-#     uuid: str
-#     locate_data: str
-#
-#
-# class PICreate(PIBase):
-#     pass
-#
-#
-# class PI(PIBase):
-#     id: int
-#
-#     class Config:
-#         orm_mode = True
+class PIBase(BaseModel):
+    name: str
+    price: float
+    currencies: str
+    count_visitors: int
+    uuid: str
+    locate_data: str
+
+
+class PIFindBase(BaseModel):
+    name: Optional[str] = "name"
+    uuid: Optional[str] = "uuid"
+    active: Optional[bool] = True
+
+
+class PICreate(PIBase):
+    pass
+
+
+class PI(PIBase):
+    id: int
+    active: bool = False
+
+    class Config:
+        orm_mode = True

@@ -19,42 +19,76 @@ from . import models, schemas
 from core.auth.token import api_token_hash, generate_random_token
 
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
-
-
-def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
-
-
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
-
-
+# Auth
+# sign on
 def create_user(db: Session, user: schemas.UserCreate):
-    hashed_password = user.password
-    db_user = models.User(email=user.email, hashed_password=hashed_password)
+    hashed_password = api_token_hash(token=user.password)
+    db_user = models.User(login=user.login, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
 
-def get_items(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Item).offset(skip).limit(limit).all()
+# sign in
+def get_user_by_login(db: Session, login: str):
+    return db.query(models.User).filter(models.User.login == login).first()
 
 
-def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
-    db_item = models.Item(**item.dict(), owner_id=user_id)
-    db.add(db_item)
+# help.py
+def get_user(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id).first()
+
+
+def get_users(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.User).offset(skip).limit(limit).all()
+
+
+# Change password
+def update_password(db: Session, login: str, new_password: str):
+    hashed_password = api_token_hash(token=new_password)
+    db.query(models.User).filter(models.User.login == login).update(
+        {"hashed_password": hashed_password})
     db.commit()
-    db.refresh(db_item)
-    return db_item
+    return get_user_by_login(db, login)
 
 
-# Admin
-# def get_admin_by_login(db: Session, login: str):
-#     return db.query(models.Admin).filter(models.Admin.login == login).first()
+# Control site
+# Get
+def get_pi_by_name(db: Session, name: str, active: bool):
+    return db.query(models.Raspberry).filter(
+        models.Raspberry.name == name,
+        models.Raspberry.active == active
+    ).first()
 
 
+def get_pi(db: Session, id: int, active: bool):
+    return db.query(models.Raspberry).filter(
+        models.Raspberry.id == id,
+        models.Raspberry.active == active
+    ).first()
 
+
+def get_pis(db: Session, skip: int = 0, limit: int = 100, active: bool = True):
+    return db.query(models.Raspberry).query(
+        models.Raspberry.active == active
+    ).offset(skip).limit(limit).all()
+
+
+# Update (default - active)
+def update_pi_name(db: Session, name: str, active: bool = True):
+    db.query(models.Raspberry).filter(
+        models.Raspberry.name == name,
+        models.Raspberry.active == active
+    ).update({"name": name})
+    db.commit()
+    return get_pi_by_name(db, name, active)
+
+
+def update_pi_price_by_name(db: Session, name: str, price: float, active: bool = True):
+    db.query(models.Raspberry).filter(
+        models.Raspberry.name == name,
+        models.Raspberry.active == active
+    ).update({"price": price})
+    db.commit()
+    return get_pi_by_name(db, name, active)

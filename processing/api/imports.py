@@ -13,4 +13,6 @@ __version__ = '20201116'
 
 
 from processing.api import help
+from processing.api.auth import auth
+from processing.api.control_site import site_get
 
