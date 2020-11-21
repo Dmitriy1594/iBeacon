@@ -8,19 +8,15 @@ Project iBeacon
 __author__ = 'dromakin'
 __maintainer__ = 'dromakin'
 __credits__ = ['dromakin', ]
-
 __status__ = 'Development'
 __version__ = '20201118'
 
-# TODO для управления программой на raspberry pi через запросы по ssh или простой сервер на raspberry pi.
-# TODO оптимально - делать запуск через терминальную команду ssh.
 
-import datetime
+# Start program
+# update data.json
+# update settings.json
 
+# Stop program
 
-def main():
-    print(datetime.datetime.now())
-
-
-if __name__ == "__main__":
-    main()
+# Update program
+# get_pi_data

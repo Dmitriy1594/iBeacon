@@ -37,6 +37,15 @@ def get_db():
         db.close()
 
 
+# Create
+@router.post(f"{PATH_TO_API}" + "/create_pi/", response_model=schemas.PICreate)
+def create_pi(pi: schemas.PICreate, db: Session = Depends(get_db)):
+    db_pi = crud.get_pi_by_name(db, pi.name)
+    if db_pi is None:
+        raise HTTPException(status_code=404, detail="PI not found")
+    return crud.create_pi(db, pi=db_pi)
+
+
 # Get
 @router.get(f"{PATH_TO_API}" + "/get_pis/", response_model=List[schemas.PI])
 def get_pis(skip: int = 0, limit: int = 100, active: bool = True, db: Session = Depends(get_db)):
@@ -99,7 +108,7 @@ def update_pi(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
         )
 
         if pi_ is None:
-            raise HTTPException(status_code=404, detail="PI didn't update. New PI didn't find")
+            raise HTTPException(status_code=404, detail="PI didn't update. New PI didn't find.")
         return pi_
     else:
         raise HTTPException(status_code=404, detail="PI didn't update. Field problem.")
@@ -113,7 +122,7 @@ def update_price_by_name(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
     return crud.update_pi_price_by_name(db, name, price, currencies)
 
 
-@router.post(f"{PATH_TO_API}" + "/update_price_by_name/", response_model=schemas.PI)
+@router.post(f"{PATH_TO_API}" + "/update_name_and_uuid/", response_model=schemas.PI)
 def update_name_and_uuid(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
     name = pi.name
     uuid = pi.uuid
@@ -123,12 +132,15 @@ def update_name_and_uuid(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
     return crud.update_pi_name_and_uuid(db, name, uuid, old_name, old_uuid)
 
 
-@router.post(f"{PATH_TO_API}" + "/update_price_by_name/", response_model=schemas.PI)
-def update_price_by_name(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
+@router.post(f"{PATH_TO_API}" + "/update_locate_data_by_name/", response_model=schemas.PI)
+def update_locate_data_by_name(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
     name = pi.name
     locate_data = pi.locate_data
     return crud.update_pi_locate_data(db, name, locate_data)
 
 
-# TODO: create pi data:
-
+@router.post(f"{PATH_TO_API}" + "/update_activate_by_name/", response_model=schemas.PI)
+def update_activate_by_name(pi: schemas.PIFindBase, db: Session = Depends(get_db)):
+    name = pi.name
+    active = pi.active
+    return crud.update_pi_active(db, name, active)

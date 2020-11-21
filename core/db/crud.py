@@ -173,3 +173,46 @@ def update_pi_locate_data(
         }
     )
     return get_pi_by_name(db, name)
+
+
+def update_pi_active(
+        db: Session,
+        name: str,
+        active: bool
+):
+    db.query(models.Raspberry).filter(
+        models.Raspberry.name == name,
+    ).update(
+        {
+            "active": active,
+        }
+    )
+    return get_pi_by_name(db, name)
+
+
+# Create
+# PI
+def create_pi(
+        db: Session,
+        pi: schemas.PICreate,
+):
+    name = pi.name
+    price = pi.price
+    currencies = pi.currencies
+    count_visitors = pi.count_visitors
+    uuid = pi.uuid
+    locate_data = pi.locate_data
+    active = False
+    db_pi = models.Raspberry(
+        name=name,
+        price=price,
+        currencies=currencies,
+        count_visitors=count_visitors,
+        uuid=uuid,
+        locate_data=locate_data,
+        active=active,
+    )
+    db.add(db_pi)
+    db.commit()
+    db.refresh(db_pi)
+    return db_pi
