@@ -55,11 +55,16 @@ def update_password(db: Session, login: str, new_password: str):
 
 # Control site
 # Get
-def get_pi_by_name(db: Session, name: str, active: bool):
-    return db.query(models.Raspberry).filter(
-        models.Raspberry.name == name,
-        models.Raspberry.active == active
-    ).first()
+def get_pi_by_name(db: Session, name: str, active: bool = None):
+    if active is not None:
+        return db.query(models.Raspberry).filter(
+            models.Raspberry.name == name,
+            models.Raspberry.active == active
+        ).first()
+    else:
+        return db.query(models.Raspberry).filter(
+            models.Raspberry.name == name,
+        ).first()
 
 
 def get_pi(db: Session, id: int, active: bool):
@@ -76,19 +81,95 @@ def get_pis(db: Session, skip: int = 0, limit: int = 100, active: bool = True):
 
 
 # Update (default - active)
-def update_pi_name(db: Session, name: str, active: bool = True):
-    db.query(models.Raspberry).filter(
-        models.Raspberry.name == name,
-        models.Raspberry.active == active
-    ).update({"name": name})
+def update_all(
+        db: Session,
+        name: str,
+        price: float,
+        currencies: str,
+        count_visitors: int,
+        uuid: str,
+        locate_data: str,
+        old_name: str,
+        old_uuid: str,
+):
+    q = None
+    if old_uuid is not None:
+        q = db.query(models.Raspberry).filter(
+            models.Raspberry.name == old_name,
+            models.Raspberry.uuid == old_uuid,
+        )
+    else:
+        q = db.query(models.Raspberry).filter(
+            models.Raspberry.name == old_name,
+        )
+
+    q.update(
+        {
+            "name": name,
+            "price": price,
+            "currencies": currencies,
+            "count_visitors": count_visitors,
+            "uuid": uuid,
+            "locate_data": locate_data,
+        }
+    )
     db.commit()
-    return get_pi_by_name(db, name, active)
+    return get_pi_by_name(db, name)
 
 
-def update_pi_price_by_name(db: Session, name: str, price: float, active: bool = True):
+def update_pi_price_by_name(
+        db: Session,
+        name: str,
+        price: float,
+        currencies: str = None
+):
+    if currencies is not None:
+        db.query(models.Raspberry).filter(
+            models.Raspberry.name == name,
+        ).update(
+            {
+                "price": price,
+                "currencies": currencies,
+            }
+        )
+    else:
+        db.query(models.Raspberry).filter(
+            models.Raspberry.name == name,
+        ).update({"price": price})
+    db.commit()
+    return get_pi_by_name(db, name)
+
+
+def update_pi_name_and_uuid(
+        db: Session,
+        name: str,
+        uuid: str,
+        old_name: str,
+        old_uuid: str
+):
+    db.query(models.Raspberry).filter(
+        models.Raspberry.name == old_name,
+        models.Raspberry.uuid == old_uuid,
+    ).update(
+        {
+            "uuid": uuid,
+            "name": name
+        }
+    )
+    db.commit()
+    return get_pi_by_name(db, name)
+
+
+def update_pi_locate_data(
+        db: Session,
+        name: str,
+        locate_data: str
+):
     db.query(models.Raspberry).filter(
         models.Raspberry.name == name,
-        models.Raspberry.active == active
-    ).update({"price": price})
-    db.commit()
-    return get_pi_by_name(db, name, active)
+    ).update(
+        {
+            "locate_data": locate_data,
+        }
+    )
+    return get_pi_by_name(db, name)

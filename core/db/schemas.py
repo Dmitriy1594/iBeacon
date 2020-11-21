@@ -40,15 +40,27 @@ class PIBase(BaseModel):
     name: str
     price: float
     currencies: str
-    count_visitors: int
+    count_visitors: int = 0
     uuid: str
-    locate_data: str
+    locate_data: str = "json_data"
 
 
 class PIFindBase(BaseModel):
     name: Optional[str] = "name"
     uuid: Optional[str] = "uuid"
     active: Optional[bool] = True
+
+
+class PIUpdate(BaseModel):
+    name: Optional[str] = None
+    price: Optional[float] = None
+    currencies: Optional[str] = None
+    count_visitors: Optional[int] = None
+    uuid: Optional[str] = None
+    locate_data: Optional[str] = None
+    # old
+    old_name: Optional[str] = None
+    old_uuid: Optional[str] = None
 
 
 class PICreate(PIBase):
