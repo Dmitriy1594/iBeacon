@@ -34,7 +34,8 @@ from config.settings import PATH_TO_API
 from processing.api.imports import (
     help,
     auth,
-    site
+    site,
+    get
 )
 
 models.Base.metadata.create_all(bind=engine)
@@ -74,6 +75,16 @@ app.include_router(
 
 app.include_router(
     site.router,
+    # dependencies=[fastapi.Depends(check_token_header)],
+    responses={
+        404: {"description": "Not found"},
+    }
+    #     422: {'description': 'Validation Error', 'model': ValidationErrorModelResponse}
+    # },
+)
+
+app.include_router(
+    get.router,
     # dependencies=[fastapi.Depends(check_token_header)],
     responses={
         404: {"description": "Not found"},

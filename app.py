@@ -14,9 +14,12 @@ __version__ = '20201116'
 import uvicorn
 import multiprocessing as mp
 
+from invoke import run
+
 from core.routing import app
 
 from config.settings import HOST, PORT, DEBUG
+
 
 if __name__ == "__main__":
     if DEBUG is True:
@@ -25,3 +28,8 @@ if __name__ == "__main__":
     else:
         uvicorn.run("app:app", host=HOST, port=PORT, log_level="info",
                     workers=mp.cpu_count())
+
+    # start nginx
+    command = "nginx -s reload -c /Users/romakindmitriy/PycharmProjects/iBeacon/config/nginx.conf"
+    result = run(command, hide=True, warn=True)
+    # print(result)

@@ -12,6 +12,10 @@ __copyright__ = "Cybertonica LLC, London, 2020"
 __status__ = 'Development'
 __version__ = '20201117'
 
+from typing import List, Optional, Dict
+
+from fastapi import HTTPException
+
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -74,8 +78,14 @@ def get_pi(db: Session, id: int, active: bool):
     ).first()
 
 
+def get_first_no_active_pi(db: Session):
+    return db.query(models.Raspberry).filter(
+        models.Raspberry.active == False
+    ).first()
+
+
 def get_pis(db: Session, skip: int = 0, limit: int = 100, active: bool = True):
-    return db.query(models.Raspberry).query(
+    return db.query(models.Raspberry).filter(
         models.Raspberry.active == active
     ).offset(skip).limit(limit).all()
 
@@ -85,7 +95,7 @@ def update_all(
         db: Session,
         name: str,
         price: float,
-        currencies: str,
+        currencies: List[str],
         count_visitors: int,
         uuid: str,
         locate_data: str,
@@ -140,24 +150,52 @@ def update_pi_price_by_name(
     return get_pi_by_name(db, name)
 
 
-def update_pi_name_and_uuid(
+def update_pi_name_and_or_uuid(
         db: Session,
         name: str,
         uuid: str,
         old_name: str,
         old_uuid: str
 ):
-    db.query(models.Raspberry).filter(
-        models.Raspberry.name == old_name,
-        models.Raspberry.uuid == old_uuid,
-    ).update(
-        {
-            "uuid": uuid,
-            "name": name
-        }
-    )
-    db.commit()
-    return get_pi_by_name(db, name)
+    if old_name is not None or old_uuid is not None:
+        if name is not None and uuid is not None:
+            db.query(models.Raspberry).filter(
+                models.Raspberry.name == old_name,
+                models.Raspberry.uuid == old_uuid,
+            ).update(
+                {
+                    "uuid": uuid,
+                    "name": name
+                }
+            )
+            db.commit()
+            return get_pi_by_name(db, name)
+        elif name is not None:
+            db.query(models.Raspberry).filter(
+                models.Raspberry.name == old_name,
+            ).update(
+                {
+                    "name": name
+                }
+            )
+            db.commit()
+            return get_pi_by_name(db, name)
+        elif uuid is not None:
+            db.query(models.Raspberry).filter(
+                models.Raspberry.uuid == old_uuid,
+            ).update(
+                {
+                    "uuid": uuid
+                }
+            )
+            db.commit()
+            return get_pi_by_name(db, name)
+        else:
+            raise HTTPException(status_code=404,
+                                detail="PI didn't update. Fields problem: uuid or name.")
+    else:
+        raise HTTPException(status_code=404,
+                            detail="PI didn't update. Fields problem: old_name or old_uuid.")
 
 
 def update_pi_locate_data(
@@ -203,6 +241,7 @@ def create_pi(
     uuid = pi.uuid
     locate_data = pi.locate_data
     active = False
+    ip = pi.ip
     db_pi = models.Raspberry(
         name=name,
         price=price,
@@ -211,6 +250,7 @@ def create_pi(
         uuid=uuid,
         locate_data=locate_data,
         active=active,
+        ip=ip
     )
     db.add(db_pi)
     db.commit()

@@ -28,3 +28,10 @@ Course project: Электронные ценники
 1. расчет расстояния до пользователя для включения дисплея
 1. включать ожидание нажатия на кнопки при достижении определенного расстояния
 
+
+###  Docker + gunicorn
+1. https://medium.com/analytics-vidhya/setting-up-django-with-nginx-gunicorn-and-docker-352f7656f869
+1. https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker
+1. https://medium.com/analytics-vidhya/dajngo-with-nginx-gunicorn-aaf8431dc9e0
+1. https://github.com/benoitc/gunicorn/blob/master/examples/nginx.conf
+

@@ -39,7 +39,11 @@ def get_db():
 
 # Sign
 # Sign on
-@router.post(f"{PATH_TO_API}" + "/sign_on/", response_model=schemas.User)
+@router.post(
+    f"{PATH_TO_API}" + "/sign_on/",
+    response_model=schemas.User,
+    tags=["site",]
+)
 def sign_on(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_login(db, login=user.login)
     if db_user:
@@ -48,7 +52,11 @@ def sign_on(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 # Sign in
-@router.post(f"{PATH_TO_API}" + "/sign_in/", response_model=schemas.User)
+@router.post(
+    f"{PATH_TO_API}" + "/sign_in/",
+    response_model=schemas.User,
+    tags=["site",]
+)
 def sign_in(auth_model: schemas.UserCreate, db: Session = Depends(get_db)):
     login = auth_model.login
     password = auth_model.password
@@ -61,7 +69,11 @@ def sign_in(auth_model: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 # Forget password
-@router.post(f"{PATH_TO_API}" + "/change_password/", response_model=schemas.User)
+@router.post(
+    f"{PATH_TO_API}" + "/change_password/",
+    response_model=schemas.User,
+    tags=["site",]
+)
 def change_password(auth_model: schemas.UserCreate, db: Session = Depends(get_db)):
     login = auth_model.login
     password = auth_model.password
@@ -69,13 +81,21 @@ def change_password(auth_model: schemas.UserCreate, db: Session = Depends(get_db
 
 
 # Users
-@router.get(f"{PATH_TO_API}" + "/users/", response_model=List[schemas.User])
+@router.get(
+    f"{PATH_TO_API}" + "/users/",
+    response_model=List[schemas.User],
+    tags=["site",]
+)
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
 
-@router.get(f"{PATH_TO_API}" + "/users/{user_id}", response_model=schemas.User)
+@router.get(
+    f"{PATH_TO_API}" + "/users/{user_id}",
+    response_model=schemas.User,
+    tags=["site",]
+)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
