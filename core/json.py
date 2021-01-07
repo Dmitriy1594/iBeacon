@@ -15,7 +15,7 @@ import datetime
 import json as original_json
 
 
-class CoreJsonTypeError(Exception, TypeError):
+class CoreJsonTypeError(Exception,):
     """
     TypeError in core.json._default function
     """

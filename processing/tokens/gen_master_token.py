@@ -71,6 +71,7 @@ def make_token_files(
 if __name__ != "__main__":
     raise Exception("must be start")
 
+
 if __name__ == "__main__":
     make_token_files(
         team='cbt',
@@ -86,7 +87,7 @@ if __name__ == "__main__":
             "Site token",
 
         ],
-        private_path='./../config/tokens/tokens.{team}.{date}.private.json',
-        public_path='./../config/tokens/tokens.{team}.{date}.public.json',
+        private_path='./../../config/tokens/tokens.{team}.{date}.private.json',
+        public_path='./../../config/tokens/tokens.{team}.{date}.public.json',
         period=datetime.timedelta(days=120),
     )

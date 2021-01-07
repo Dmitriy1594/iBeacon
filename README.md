@@ -19,7 +19,7 @@ Course project: Электронные ценники
 
 ### Raspberry Pi
 
-#### Client 
+#### Client
 1. необходима валидация данных data.json с учетом текущих settings.json
 1. как отправлять запрос на сервер для обновления data.json и settings.json
 1. как сделать remote перезапуск дисплея, если постоянно ждем ввода кнопки?
@@ -34,4 +34,7 @@ Course project: Электронные ценники
 1. https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker
 1. https://medium.com/analytics-vidhya/dajngo-with-nginx-gunicorn-aaf8431dc9e0
 1. https://github.com/benoitc/gunicorn/blob/master/examples/nginx.conf
+
+### TODO
+1. SprootAI
 

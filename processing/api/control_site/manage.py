@@ -16,8 +16,12 @@ from fabric import Connection
 
 # from config.settings import PI_SSH_CONNECTION_PROPERTIES
 PI_SSH_CONNECTION_PROPERTIES = {
-    "host": "192.168.31.97",
+    # "host": "192.168.31.97",
+    "host": "192.168.8.104",
     "user": "pi",
+    "connect_kwargs": {
+        "password": "Romakin1594"
+    }
 }
 
 
@@ -25,7 +29,7 @@ PI_SSH_CONNECTION_PROPERTIES = {
 def send_settings():
     # echo 'Hello, world.' >foo.txt
     c = Connection(**PI_SSH_CONNECTION_PROPERTIES)
-    command = "cd ~/Documents/display/settings | echo 'Hello, world.' >foo.txt"
+    command = "cd ~/Documents/display/settings && pwd"
     return c.run(command, hide=True).stdout.strip()
 
 

@@ -23,13 +23,15 @@ from config.settings import HOST, PORT, DEBUG
 
 if __name__ == "__main__":
     if DEBUG is True:
+        # start nginx
+        # command = "nginx -s reload -c /Users/romakindmitriy/PycharmProjects/iBeacon/config/nginx.conf"
+        # command = "nginx -s reload -c /Users/romakindmitriy/PycharmProjects/iBeacon/config/nginx.conf"
+        # result = run(command, hide=True, warn=True)
+        # print(result)
+
         uvicorn.run("app:app", host=HOST, port=PORT, log_level="trace", debug=DEBUG,
-                    workers=1, reload=True)
+                    workers=4, reload=True)
     else:
         uvicorn.run("app:app", host=HOST, port=PORT, log_level="info",
                     workers=mp.cpu_count())
 
-    # start nginx
-    command = "nginx -s reload -c /Users/romakindmitriy/PycharmProjects/iBeacon/config/nginx.conf"
-    result = run(command, hide=True, warn=True)
-    # print(result)

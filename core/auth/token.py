@@ -77,8 +77,6 @@ random.seed("Salt_dfdf4395790sd__sdfgjopjrpg" + str(datetime.datetime.now()))
 
 
 def is_api_token(token: str) -> bool:
-    # Copy from
-    # https://gitlab.cybertonica.com/Pipeline/sw-engine/-/blob/master/core/__init__.py
     if not token.startswith('PI'):
         return False
     if not token.endswith('TOKEN'):

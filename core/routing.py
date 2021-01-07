@@ -13,6 +13,8 @@ __status__ = 'Development'
 __version__ = '20201117'
 
 from typing import List
+import requests
+import json
 
 import fastapi
 from fastapi import FastAPI, Request, status, HTTPException, Depends
@@ -22,6 +24,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import PlainTextResponse
 from fastapi.openapi.utils import get_openapi
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+from fastapi.middleware.cors import CORSMiddleware
+
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
 
@@ -40,9 +47,6 @@ from processing.api.imports import (
 
 models.Base.metadata.create_all(bind=engine)
 
-
-# TODO: теги
-
 app = fastapi.FastAPI(
     debug=DEBUG,
     title='control-api',
@@ -51,6 +55,27 @@ app = fastapi.FastAPI(
     # openapi_tags=tags_metadata,
     docs_url=None,
     redoc_url=None
+)
+
+# http://localhost:40002/
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost:40002",
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:63342",
+    "http://0.0.0.0:5002",
+    "http://192.168.31.19:5002"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(
@@ -93,6 +118,7 @@ app.include_router(
     # },
 )
 
+
 # TODO: когда доделаю сайт эти ссылки нужно будет встроить в сайт и сделать возиожность подключения к ним только через авторизацию
 
 # OPENAPI
@@ -115,4 +141,22 @@ async def get_documentation():
 
 @app.get(path='/', tags=["help"], include_in_schema=False)
 async def root():
-    return RedirectResponse("/docs")
+    return RedirectResponse("/auth")
+
+
+# Rendering html
+app.mount("/static", StaticFiles(directory="./static"), name="static")
+templates = Jinja2Templates(directory="./templates")
+
+
+@app.get(path='/auth', tags=["site", "pages"], include_in_schema=False, response_class=HTMLResponse)
+async def auth(request: Request, ):
+    # return templates.TemplateResponse("item.html", {"request": request})
+    return templates.TemplateResponse("auth/sign-in.html", {"request": request})
+
+
+@app.get(path='/register', tags=["site", "pages"], include_in_schema=False,
+         response_class=HTMLResponse)
+async def register(request: Request, ):
+    # return templates.TemplateResponse("item.html", {"request": request})
+    return templates.TemplateResponse("register/register_boxed.html", {"request": request})

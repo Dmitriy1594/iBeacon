@@ -65,7 +65,8 @@ def sign_in(auth_model: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_login(db, login=login)
     if db_user is None:
         raise HTTPException(status_code=400, detail="Please sign up!")
-    return Response(status_code=200)
+    # return Response(status_code=200, content=db_user)
+    return db_user
 
 
 # Forget password
