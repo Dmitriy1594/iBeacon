@@ -69,6 +69,17 @@ def get_pis(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
     return db_pi
 
 
+@router.post(
+    f"{PATH_TO_API}" + "/get_count_visitors_by_name/",
+    response_model=schemas.PI,
+    tags=["get", "PI", "site"]
+)
+def get_count_visitors_by_name(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
+    db_pi = crud.get_count_visitors_by_name(db, name=pi.name,)
+    return db_pi
+
+
+
 @router.get(
     f"{PATH_TO_API}" + "/get_pis/",
     response_model=List[schemas.PI],

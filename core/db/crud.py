@@ -339,6 +339,27 @@ def create_pi(
     return db_pi
 
 
+# Beacons and PI
+def get_count_visitors_by_name(
+    db: Session,
+    name: str,
+):
+    lots = db.query(models.Beacon).filter(
+        models.Beacon.product_name == name,
+    ).count()
+
+    db.query(models.Raspberry).filter(
+        models.Raspberry.name == name,
+    ).update(
+        {
+            "count_visitors": int(lots),
+        }
+    )
+    db.commit()
+    db_pi = get_pi_by_name(db, name)
+    return db_pi
+
+
 # BEACONS
 # Beacon create
 def create_beacon(

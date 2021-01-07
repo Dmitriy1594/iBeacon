@@ -14,7 +14,7 @@ __version__ = '20201116'
 import os
 import json
 
-from config.environment import DEBUG
+from config.environment import DEBUG, SERVER_URL_, DOCKER_RUN
 
 from processing.api.ip import get_ip
 
@@ -28,7 +28,15 @@ PATH_TO_API = "/v1"
 
 SQL_DBS = ["PI",]
 
-SERVER_URL = get_ip()
+SERVER_URL = None
+
+if DOCKER_RUN == True:
+    if SERVER_URL_ is None:
+        SERVER_URL = "192.168.31.19"
+    else:
+        SERVER_URL = SERVER_URL_
+else:
+    SERVER_URL = get_ip()
 
 PI_SSH_CONNECTION_PROPERTIES = {
     "host": "192.168.31.97",
