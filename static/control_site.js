@@ -224,7 +224,7 @@ function update_settings(name, alert_) {
 }
 
 // Update count_visitors
-const CV_URL = "http://0.0.0.0:5002/v1/get_pi_by_name/"
+const CV_URL = "http://0.0.0.0:5002/v1/get_count_visitors_by_name/"
 
 function get_count_visitors_by_name(product_name) {
     let xhr = new XMLHttpRequest();

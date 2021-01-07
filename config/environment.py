@@ -20,11 +20,8 @@ if DEBUG == 'True':
 
 DB_URL = os.getenv('DB_URL')
 
-# TEST_BRANCH = os.getenv("TEST_BRANCH", 'False')
-#
-# URL_SHARED = os.getenv("URL_SHARED", 'https://sw-analysis-api-shared.cybertonica.com')
-# PORT_SHARED = os.getenv("PORT_SHARED", 443)
-#
-# URL_TEST = os.getenv("URL_TEST")
-# PORT_TEST = os.getenv("PORT_TEST", 443)
+DOCKER_RUN = os.getenv('DOCKER_RUN', False)
+if DOCKER_RUN == "True":
+    DOCKER_RUN = True
 
+SERVER_URL_ = os.getenv("SERVER_URL", None)

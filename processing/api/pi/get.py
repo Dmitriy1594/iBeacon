@@ -124,7 +124,7 @@ def get_settings_pi(pi: schemas.PIFindBase, db: Session = Depends(get_db)):
     version = str(datetime.datetime.now().timestamp())
 
     settings_json = {
-        "server_url": SERVER_URL + ":" + PORT,
+        "server_url": SERVER_URL + ":" + str(PORT),
         "default_currency": default_currency,
         "default_buttons_currency": default_buttons_currency,
         "scanning_seconds": scanning_seconds,
@@ -178,10 +178,6 @@ def deploy_settings_json(pi: schemas.PIFindBase, db: Session = Depends(get_db)):
     }
 
     return JSONResponse(content=jsonable_encoder(info))
-
-
-def save_locate_data():
-    pass
 
 
 # turn on program
