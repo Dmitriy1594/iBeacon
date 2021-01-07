@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Starter Template for Bootstrap</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+<!--    <link href="http://0.0.0.0:5002/static/bootstrap/css/bootstrap.css" rel="stylesheet">-->
+    <link href="{{ url_for('static', path='/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', path='/starter-template.css') }}" rel="stylesheet">
+<!--    <link href="http://0.0.0.0:5002/static/starter-template.css" rel="stylesheet">-->
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+            aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">Dashboard</a>
+    <a class="navbar-brand text-danger" href="#">{{login}}</a>
+    <button class="btn btn-light btn-outline-dark btn-sm" type="button"
+            onclick="go_to_login_page()">Sign out
+    </button>
+</nav>
+<div class="starter-template">
+    <h1>Active PI</h1>
+</div>
+<div class="container">
+    {% for pi in pis_active %}
+    <div class="col-lg-12 col-md-6">
+        <div class="card flex-md-row mb-4 box-shadow h-md-250">
+            <div class="card-body d-flex flex-column align-items-start block_inline">
+                <strong class="d-inline-block mb-2 text-primary">ID: {{ pi['id'] }}</strong>
+                <strong class="d-inline-block mb-2 text-primary">uuid: {{ pi['uuid'] }}</strong>
+                <h3 class="mb-0"><a class="text-dark" href="#">{{ pi['name'] }}</a></h3>
+                <div class="input-group-append">
+                    <div class="input-group-text">name: {{ pi['name'] }}</div>
+<!--                    <input type="text" class="form-control" id="{{ pi['name']|safe }}"-->
+<!--                           placeholder="new name here">-->
+                </div>
+                <div class="input-group-append">
+                    <div class="input-group-text">price: {{ pi['price'] }}</div>
+<!--                    <input type="text" class="form-control" id="{{ pi['price']|safe }}"-->
+<!--                           placeholder="new price here">-->
+                </div>
+                <!--                    <div class="input-group-append">-->
+                <!--                        <div class="input-group-text">currencies: {{ pi['currencies'] }}</div>-->
+                <!--                        <input type="text" class="form-control" id="pi_currencies" placeholder="new currencies here">-->
+                <!--                    </div>-->
+                <div class="input-group-append">
+                    <div class="input-group-text">active: {{ pi['active'] }}</div>
+<!--                    <input type="text" class="form-control" id="pi_active"-->
+<!--                           placeholder="new active here">-->
+                    <button type="button" class="btn btn-light btn-outline-dark w-60" onclick="turn_off('{{ pi['name']|safe }}')">Turn off</button>
+                </div>
+<!--                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="save_changes_active('{{ pi['id']|safe }}', '{{ pi['name']|safe }}', '{{ pi['price']|safe }}')">Save changes-->
+<!--                </button>-->
+            </div>
+             <div class="card-body d-flex flex-column align-items-start block_inline">
+                <strong class="d-inline-block mb-2 text-primary" id="count_visitors_{{ pi['uuid']|safe }}">Count Visitors: {{ pi['count_visitors'] }}</strong>
+                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="get_locate_data_by_name('{{ pi['name']|safe }}')">Plot the last beacon</button>
+<!--                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="get_data_plot_by_product('{{ pi['name']|safe }}')">Plot all</button>-->
+                <div id="canvas-holder">
+                    <canvas id="chart-area" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="starter-template">
+    <h1>No active PI</h1>
+</div>
+<div class="container">
+    {% for pi in pis_no_active %}
+    <div class="col-lg-12 col-md-6">
+        <div class="card flex-md-row mb-4 box-shadow h-md-250">
+            <div class="card-body d-flex flex-column align-items-start block_inline">
+                <strong class="d-inline-block mb-2 text-primary">ID: {{ id }}</strong>
+                <strong class="d-inline-block mb-2 text-primary">uuid: {{ pi['uuid'] }}</strong>
+                <h3 class="mb-0"><a class="text-dark" href="#">{{ pi['name'] }}</a></h3>
+                <div class="input-group-append">
+                    <div class="input-group-text">name: {{ pi['name'] }}</div>
+                    <input type="text" class="form-control" id="{{ pi['name']|safe }}"
+                           placeholder="new name here">
+                </div>
+                <div class="input-group-append">
+                    <div class="input-group-text">price: {{ pi['price'] }}</div>
+                    <input type="text" class="form-control" id="{{ pi['price']|safe }}"
+                           placeholder="new price here">
+                </div>
+                <!--                    <div class="input-group-append">-->
+                <!--                        <div class="input-group-text">currencies: {{ pi['currencies'] }}</div>-->
+                <!--                        <input type="text" class="form-control" id="pi_currencies" placeholder="new currencies here">-->
+                <!--                    </div>-->
+                <div class="input-group-append">
+                    <div class="input-group-text">active: {{ pi['active'] }}</div>
+<!--                    <input type="text" class="form-control" id="pi_active"-->
+<!--                           placeholder="new active here">-->
+                    <button type="button" class="btn btn-light btn-outline-dark w-60" onclick="turn_on('{{ pi['name']|safe }}')">Turn on</button>
+                </div>
+                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="save_changes('{{ pi['id']|safe }}', '{{ pi['name']|safe }}', '{{ pi['price']|safe }}')">Save changes
+                </button>
+                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="update_settings('{{ pi['name']|safe }}', true)">Update settings</button>
+            </div>
+            <div class="card-body d-flex flex-column align-items-start block_inline">
+                <strong class="d-inline-block mb-2 text-primary" id="count_visitors_{{ pi['uuid']|safe }}">Count Visitors: {{ pi['count_visitors'] }}</strong>
+<!--                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="get_locate_data_by_name('{{ pi['name']|safe }}')">Plot the last beacon</button>-->
+<!--                <div id="canvas-holder">-->
+<!--                    <canvas id="chart-area" width="400" height="400"></canvas>-->
+<!--                </div>-->
+                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="get_data_plot_by_product('{{ pi['name']|safe }}')">Plot all</button>
+                <div id="canvas-holder">
+                    <canvas id="chart-area-all" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+<!-- /.container -->
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!--    https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>-->
+<!--<script src="{{ url_for('static', path='/Chart.js') }}"></script>-->
+
+
+<!--<script src="http://0.0.0.0:5002/static/jquery.min.js"></script>-->
+<script src="{{ url_for('static', path='/jquery.min.js') }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!--<script src="http://0.0.0.0:5002/static/popper.js"></script>-->
+<script src="{{ url_for('static', path='/auth/popper.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<!--<script src="http://0.0.0.0:5002/static/bootstrap/js/bootstrap.min.js"></script>-->
+<script src="{{ url_for('static', path='/bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<!--<script src="http://0.0.0.0:5002/static/control_site.js"></script>-->
+<script src="{{ url_for('static', path='/control_site.js') }}"></script>
+</body>
+</html>
