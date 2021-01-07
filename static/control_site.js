@@ -96,11 +96,36 @@ function turn_off(name, alert_= true, reload= true) {
 }
 
 
+const NULL_CV = "http://0.0.0.0:5002/v1/set_null_count_visitors/";
+
+function set_null_count_visitors(name,) {
+    let xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            let json = JSON.parse(this.responseText);
+            // console.log(json);
+            // location.reload();
+            document.getElementById(id).innerHTML = "Count Visitors: 0";
+        }
+    };
+
+    xhr.open("POST", NULL_CV, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    let data = JSON.stringify(
+        {
+            "name": name
+        }
+    );
+    xhr.send(data);
+}
+
+
 const UPDATE_NP_BY_ID = "http://0.0.0.0:5002/v1/update_by_id/";
 
 function save_changes(id, name, price, reload= true) {
     let new_name = document.getElementById(name).value;
-    //parseFloat("554,20".replace(",", "."))
+    // parseFloat("554,20".replace(",", "."))
     let new_price = parseFloat(document.getElementById(price).value);
 
     let xhr = new XMLHttpRequest();
@@ -114,6 +139,8 @@ function save_changes(id, name, price, reload= true) {
             if (reload === true) {
                 location.reload();
             }
+
+            set_null_count_visitors(json.name);
             // location.reload();
         }
     };
