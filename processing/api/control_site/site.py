@@ -211,6 +211,21 @@ def increase_count_visitors(pi: schemas.PIUpdate, db: Session = Depends(get_db))
 
 
 @router.post(
+    f"{PATH_TO_API}" + "/set_null_count_visitors/",
+    response_model=schemas.PI,
+    tags=["update", "PI", "site"]
+)
+def set_null_count_visitors(pi: schemas.PIUpdate, db: Session = Depends(get_db)):
+    name = pi.name
+    db_pi = crud.get_pi_by_name(db, name=name,)
+    if db_pi is not None:
+        count_visitors = 0
+        return crud.update_count_visitors(db, name, count_visitors)
+    else:
+        return JSONResponse(content=jsonable_encoder({"error": "Can't update count visitors. pi not found."}))
+
+
+@router.post(
     f"{PATH_TO_API}" + "/update_locate_data_by_name/",
     response_model=schemas.PI,
     tags=["update", "PI", "site"]
