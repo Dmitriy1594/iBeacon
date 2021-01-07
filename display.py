@@ -14,8 +14,10 @@ __version__ = '20201101'
 import datetime
 import sys
 import os
+import requests
 import time
 import json
+import asyncio
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -24,6 +26,9 @@ from gpiozero import Button
 
 # import logging
 # import traceback
+
+# Beacon
+from beacon_module import beacon
 
 from settings import get_settings
 from currency import get_symbol, check_price, check_currency
@@ -35,6 +40,7 @@ settingsDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'setting
 SETTINGS = get_settings()
 BUTTONS = SETTINGS["default_buttons_currency"]
 DEFAULT_CURRENCY = SETTINGS["default_currency"]
+SERVER_URL = SETTINGS["server_url"]
 
 btn1 = Button(5)  # assign each button to a variable
 btn2 = Button(6)  # by passing in the pin number
@@ -51,10 +57,26 @@ class DisplayManager:
         self.epd.Clear(0xFF)
 
         self.product = data['product']
-        self.price = check_price(data[currency_code])
+        self.price = check_price(data["currencies"][currency_code])
         self.currency = check_currency(currency_code)
         self.currency_code = get_symbol(self.currency)
         super().__init__()
+
+    def clear_display(self):
+        self.epd.init()
+        self.epd.Clear(0xFF)
+
+    def update_on_start(self):
+        url_method = "/v1/update_turn_by_pi"
+
+        payload = json.dumps({"name": self.product})
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        requests.request("POST", "http://" + SERVER_URL + url_method, headers=headers, data=payload)
+        # response = requests.request("POST", "http://" + SERVER_URL + url_method, headers=headers, data=payload)
+        # print(response.text)
 
     def printToDisplay(self):
         image = Image.new('1', (epd2in7.EPD_HEIGHT, epd2in7.EPD_WIDTH), 255)
@@ -111,8 +133,6 @@ def handleBtnPress(btn):
     # get the string based on the passed in button and send it to printToDisplay()
     currency_code = switcher.get(btn.pin.number)
 
-    # TODO заменить на скачивание файла с компьютера через ssh или bluetooth
-    # или сделать обновление файла, но в таком случае могут возникнуть проблемы
     with open(os.path.join(datadir, "data.json"), 'r') as json_file:
         data = json.load(json_file)
 
@@ -120,15 +140,12 @@ def handleBtnPress(btn):
     d.printToDisplay()
 
 
-def main():
-    epd = epd2in7.EPD()
-    epd.init()
-    epd.Clear(0xFF)
-
+def test():
     with open(os.path.join(datadir, "data.json"), 'r') as json_file:
         data = json.load(json_file)
 
     d = DisplayManager(data=data, currency_code=DEFAULT_CURRENCY)
+    d.update_on_start()
     d.printToDisplay()
 
     while True:
@@ -138,5 +155,31 @@ def main():
         btn4.when_pressed = handleBtnPress
 
 
+def main():
+    with open(os.path.join(datadir, "data.json"), 'r') as json_file:
+        data = json.load(json_file)
+
+    d = DisplayManager(data=data, currency_code=DEFAULT_CURRENCY)
+    d.update_on_start()
+    d.printToDisplay()
+
+    loop = asyncio.get_event_loop()
+
+    while loop.run_until_complete(beacon.find_device()):
+        btn1.when_pressed = handleBtnPress
+        btn2.when_pressed = handleBtnPress
+        btn3.when_pressed = handleBtnPress
+        btn4.when_pressed = handleBtnPress
+
+    d.clear_display()
+    beacon.increase_count_visitors()
+
+
 if __name__ == '__main__':
-    main()
+    while True:
+        loop = asyncio.get_event_loop()
+        visitors, answer = loop.run_until_complete(beacon.find_device())
+        if answer:
+            for i in range(visitors):
+                beacon.increase_count_visitors()
+            main()

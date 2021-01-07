@@ -1,7 +1,1 @@
-{
-  "product": "Product Name",
-  "RUB": 1000,
-  "USD": 12.65,
-  "EUR": 10.81,
-  "GBP": 9.75
-}
+{"product": "Fruit", "currencies": {"RUB": 150.0, "USD": 2.01, "EUR": 1.64, "GBP": 1.47}}

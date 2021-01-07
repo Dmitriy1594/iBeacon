@@ -1,66 +1,223 @@
-import bluetooth._bluetooth as bluez
-import struct
+"""
+beacon.py
+
+created by dromakin as 31.12.2020
+Project iBeacon
+"""
+
+__author__ = 'dromakin'
+__maintainer__ = 'dromakin'
+__credits__ = ['dromakin', ]
+__status__ = 'Development'
+__version__ = '20201231'
+
+import os
+import asyncio
+import json
+import requests
+import datetime
+from bleak import BleakScanner
+
+from settings import get_settings
+SETTINGS = get_settings()
+SERVER_URL = SETTINGS["server_url"]
+
+datadir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'data')
 
 
-def decode(packet):
-    """
-    Returns the string representation of a raw HCI packet.
-    """
-    return ''.join('%02x' % struct.unpack("B", bytes([x]))[0] for x in packet)
+def get_metres_by_rssi_txpower(rssi, txpower, N=2.3, default_measure_power=-69):
+    distance = None
+
+    if txpower == None and rssi <= 0:
+        distance = 10 ** ((default_measure_power - rssi) / (10 * N))
+
+    elif txpower == None and rssi >= 0:
+        distance = 10 ** ((default_measure_power - (-1 * rssi)) / (10 * N))
+
+    # Filtering anomaly metrics
+    elif txpower < 5 and txpower >= 0 and rssi <= 0:
+        distance = 10 ** ((default_measure_power - rssi) / (10 * N))
+
+    elif txpower < 5 and txpower >= 0 and rssi >= 0:
+        distance = 10 ** ((default_measure_power - (-1 * rssi)) / (10 * N))
+
+    # Normal metrics
+    elif rssi <= 0 and txpower <= 0:
+        distance = 10 ** ((txpower - rssi) / (10 * N))
+
+    elif rssi >= 0 and txpower >= 0:
+        distance = 10 ** (((-1 * txpower) - (-1 * rssi)) / (10 * N))
+
+    elif rssi >= 0 and txpower <= 0:
+        distance = 10 ** ((txpower - (-1 * rssi)) / (10 * N))
+
+    elif rssi <= 0 and txpower >= 0:
+        distance = 10 ** (((-1 * txpower) - rssi) / (10 * N))
+
+    # while distance > 3:
+    #     n = N + 1
+    #     distance = get_metres_by_rssi_txpower(rssi, txpower, N=n)
+
+    return distance
 
 
-class Beacon:
+def get_metres_from_rssi_by_device(device):
+    default_measure_power = -69
+    N = 2.3  # 2-4 dbm
+    distance = None
 
-    def _set_up_sock(self):
-        flt = bluez.hci_filter_new()  # очищается и создается новый фильтр
-        bluez.hci_filter_all_events(flt)  # применять фильтр ко всем событиям
-        bluez.hci_filter_set_ptype(flt, bluez.HCI_EVENT_PKT)  # выбор типа пакета (hci packet type)
-        self.sock.setsockopt(bluez.SOL_HCI, bluez.HCI_FILTER,
-                        flt)  # применение фильтра к сокету (sol_hci уровень сокета, опция и значение)
-        return self.sock
+    rssi = device.rssi
+    txpower = device.details.get('TxPower')
 
-    def _hci_toggle_le_scan(self, enable):
-        cmd_pkt = struct.pack("<BB", enable, 0x00)  # создает байт строку указанного формата
-        bluez.hci_send_cmd(self.sock, self.OGF_LE_CTL, self.OCF_LE_SET_SCAN_ENABLE, cmd_pkt)  # передает HCI команду сокету
-
-    def __init__(self, dev_id=0):
-        self.dev_id = dev_id
-        self.sock = bluez.hci_open_dev(dev_id) # создание  экземпляра класса bluetooth
-        self.OGF_LE_CTL = 0x08
-        self.OCF_LE_SET_SCAN_ENABLE = 0x0C
-        self._hci_toggle_le_scan(0x01)
-        self.dist = 0
-
-    def _distance(self, rssi, tx):
-        ratio = (255 - rssi) / tx
-        if ratio < 1:
-            return ratio ** 10
-        return 0.89976 * (ratio ** 7.7095) + 0.111
-
-    def recieve(self, beacon_id, tx):
-        self.sock = self._set_up_sock()
-        while True:
-            packet = self.sock.recv(255)
-            data = decode(packet)
-            if data.find(beacon_id) != -1:
-                dist = self._distance(int(decode(packet[-1:]), 16), tx)
-                print(data, self.exponentially_weighted_average(dist))
-                # TODO send distance to server
-                # TODO exponentially weighted average could be on server???
-
-    def disable(self):
-        self._hci_toggle_le_scan(0x00)
-
-    def exponentially_weighted_average(self, distance, betta=0.8):
-        return betta * self.dist + (1 - betta) * distance
+    distance = get_metres_by_rssi_txpower(rssi, txpower)
+    return distance
 
 
-try:
-    beacon = Beacon(0)
-    print("Seaching Beacons\n")
-    beacon.recieve("798e456b", -70)
-    # TODO Tx on phone -65, but distance is wrong. If set tx on raspberry as -70 everything is okay
-except KeyboardInterrupt as e:
-    beacon.disable()
-except:
-    print ("Error accessing bluetooth")
+def detection_callback(device, advertisement_data):
+    name = device.name
+    address = device.address
+    rssi = device.rssi
+
+    print(name, address, rssi, end=" ")
+
+    txpower = device.details.get('TxPower')
+    print(txpower, end=" ")
+    metres = get_metres_from_rssi_by_device(device,)
+    print(metres)
+
+
+async def run(seconds):
+    scanner = BleakScanner()
+    # scanner.register_detection_callback(detection_callback)
+    await scanner.start()
+    await asyncio.sleep(seconds)
+    await scanner.stop()
+
+    devices = await scanner.get_discovered_devices()
+    for d in devices:
+        print(d.name, d.rssi, d.details.get('props').get('TxPower'), d.details.get('props').get('UUIDs'), end=" ")
+        print(get_metres_by_rssi_txpower(d.rssi, d.details.get('props').get('TxPower')), end=" ")
+        print(d.details.get('props'))
+        pass
+
+
+def main():
+    while True:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(run(SETTINGS["scanning_seconds"]))
+
+
+# if __name__ == '__main__':
+#     # main()
+#     loop = asyncio.get_event_loop()
+#     loop.run_until_complete(run())
+
+# Prod functions:
+
+
+def update_locate_data_by_name(locale_data: dict):
+    with open(os.path.join(datadir, "data.json"), 'r') as json_file:
+        data = json.load(json_file)
+
+    url_method = "/v1/update_locate_data_by_name"
+
+    data = {
+        "name": data['product'],
+    }
+    data["locate_data"] = json.dumps(locale_data)
+    payload = json.dumps(data)
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    requests.request("POST", "http://" + SERVER_URL + url_method, headers=headers, data=payload)
+    # response = requests.request("POST", "http://" + SERVER_URL + url_method, headers=headers, data=payload)
+    # print(response.text)
+
+
+def send_data_beacon(locale_data: dict):
+    with open(os.path.join(datadir, "data.json"), 'r') as json_file:
+        data = json.load(json_file)
+
+    url_method = "/v1/add_beacon"
+
+    locale_data["product_name"] = data['product']
+
+    if locale_data["txPower"] is None:
+        locale_data["txPower"] = -69
+
+    payload = json.dumps(locale_data)
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    requests.request("POST", "http://" + SERVER_URL + url_method, headers=headers, data=payload)
+    # response = requests.request("POST", "http://" + SERVER_URL + url_method, headers=headers, data=payload)
+    # print(response.text)
+
+
+def increase_count_visitors():
+    with open(os.path.join(datadir, "data.json"), 'r') as json_file:
+        data = json.load(json_file)
+
+    url_method = "/v1/increase_count_visitors"
+
+    data_ = dict()
+    data_["name"] = data['product']
+
+    payload = json.dumps(data_)
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    requests.request("POST", "http://" + SERVER_URL + url_method, headers=headers, data=payload)
+    # response = requests.request("POST", "http://" + SERVER_URL + url_method, headers=headers, data=payload)
+    # print(response.text)
+
+
+async def find_device():
+    # while True:
+    scanner = BleakScanner()
+    # scanner.register_detection_callback(detection_callback)
+    await scanner.start()
+    await asyncio.sleep(SETTINGS["scanning_seconds"])
+    await scanner.stop()
+
+    devices = await scanner.get_discovered_devices()
+
+    find_flag = False
+    visitors = 0
+
+    for d in devices:
+        date = datetime.datetime.now().timestamp()
+        device_name = d.name
+        uuid = d.details.get('props').get('UUIDs')
+        if len(uuid) == 0:
+            uuid = "No data"
+        else:
+            uuid = uuid[0]
+        address = d.details.get('props').get('Address')
+        addressType = d.details.get('props').get('AddressType')
+        txPower = d.details.get('props').get('TxPower')
+        rssi = d.rssi
+        meters = get_metres_by_rssi_txpower(rssi, txPower)
+
+        if meters <= SETTINGS["meters_detection"]:
+            locate_data = {
+                "date": date,
+                "device_name": device_name,
+                "uuid": uuid,
+                "address": address,
+                "addressType": addressType,
+                "txPower": txPower,
+                "rssi": rssi,
+                # "meters": meters,
+                "meters": float("{:.2f}".format(meters)),
+            }
+            update_locate_data_by_name(locale_data=locate_data)
+            send_data_beacon(locale_data=locate_data)
+            # increase_count_visitors()
+            visitors += 1
+            find_flag = True
+
+    return visitors, find_flag
