@@ -143,6 +143,8 @@ def update_pi_by_id(
         name: str = None,
         price: float = None,
         pi_id: int = None,
+        meters_detection: float = 1.0,
+        scanning_seconds: float = 5.0,
 ):
     if name is not None and price is not None:
         db.query(models.Raspberry).filter(
@@ -151,6 +153,8 @@ def update_pi_by_id(
             {
                 "name": name,
                 "price": price,
+                "meters_detection": meters_detection,
+                "scanning_seconds": scanning_seconds,
             }
         )
     elif name is not None and price is None:
@@ -159,6 +163,8 @@ def update_pi_by_id(
         ).update(
             {
                 "name": name,
+                "meters_detection": meters_detection,
+                "scanning_seconds": scanning_seconds,
             }
         )
     elif name is None and price is not None:
@@ -167,6 +173,8 @@ def update_pi_by_id(
         ).update(
             {
                 "price": price,
+                "meters_detection": meters_detection,
+                "scanning_seconds": scanning_seconds,
             }
         )
     db.commit()

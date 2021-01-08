@@ -177,7 +177,9 @@ def update_by_id(pi: schemas.PIUpdateByID, db: Session = Depends(get_db)):
     pi_id = pi.id
     name = pi.name
     price = pi.price
-    return crud.update_pi_by_id(db, name, price, pi_id)
+    meters_detection = pi.meters_detection
+    scanning_seconds = pi.scanning_seconds
+    return crud.update_pi_by_id(db, name, price, pi_id, meters_detection, scanning_seconds)
 
 
 @router.post(
