@@ -303,3 +303,15 @@ async def menu(request: Request, id: str = None, login: str = None, db: Session 
     return templates.TemplateResponse(
         "starter-template.html", {"request": request, "id": id, "login": login, "pis_no_active": pis_no_active, "pis_active": pis_active})
 
+
+# Token create
+@router.get(
+    f"{PATH_TO_API}" + "/get_example_password/",
+    tags=["register"]
+)
+def get_example_password():
+    data = {
+        "example_password": generate_random_token()
+    }
+    return JSONResponse(content=jsonable_encoder(data))
+
