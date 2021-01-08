@@ -155,6 +155,12 @@ def test():
         btn4.when_pressed = handleBtnPress
 
 
+def find_device_asyncio() -> bool:
+    loop = asyncio.get_event_loop()
+    visitors, find_flag = loop.run_until_complete(beacon.find_device())
+    return find_flag
+
+
 def main():
     with open(os.path.join(datadir, "data.json"), 'r') as json_file:
         data = json.load(json_file)
@@ -163,9 +169,7 @@ def main():
     d.update_on_start()
     d.printToDisplay()
 
-    loop = asyncio.get_event_loop()
-
-    while loop.run_until_complete(beacon.find_device()):
+    while find_device_asyncio():
         btn1.when_pressed = handleBtnPress
         btn2.when_pressed = handleBtnPress
         btn3.when_pressed = handleBtnPress
@@ -176,6 +180,9 @@ def main():
 
 
 if __name__ == '__main__':
+    epd = epd2in7.EPD()
+    epd.init()
+    epd.Clear(0xFF)
     while True:
         loop = asyncio.get_event_loop()
         visitors, answer = loop.run_until_complete(beacon.find_device())
