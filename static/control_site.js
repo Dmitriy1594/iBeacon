@@ -1,3 +1,72 @@
+const CREATE_URL = "http://0.0.0.0:5002/v1/create_pi/";
+
+function create_pi() {
+    let name = document.getElementById("pi_name").value;
+    let price = parseFloat(document.getElementById("pi_price").value);
+    let currencies = JSON.parse(document.getElementById("pi_currencies").value);
+    let count_visitors = parseInt(document.getElementById("pi_count_visitors").value);
+    let address = document.getElementById("pi_address").value;
+    let uuid = document.getElementById("pi_uuid").value;
+    let locate_data = "locate_data";
+    let ip = document.getElementById("pi_ip").value;
+    let scanning_seconds = parseFloat(document.getElementById("pi_scanning_seconds").value);
+    let meters_detection = parseFloat(document.getElementById("pi_meters_detection").value);
+
+    let xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            let json = JSON.parse(this.responseText);
+            // console.log(json);
+            // redirect
+            alert("Create PI with ID " + json.id);
+            location.reload();
+        }
+    };
+
+    xhr.open("POST", CREATE_URL, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    let data = JSON.stringify({
+        "name": name,
+        "price": price,
+        "currencies": currencies,
+        "count_visitors": count_visitors,
+        "address": address,
+        "uuid": uuid,
+        "locate_data": locate_data,
+        "ip": ip,
+        "scanning_seconds": scanning_seconds,
+        "meters_detection": meters_detection
+    });
+    xhr.send(data);
+}
+
+
+const DELETE_URL = "http://0.0.0.0:5002/v1/delete_pi/";
+
+function delete_pi(id) {
+    let xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            let json = JSON.parse(this.responseText);
+            // console.log(json);
+            // redirect
+            alert("Deleted PI with ID " + json.id);
+            location.reload();
+        }
+    };
+
+    xhr.open("POST", DELETE_URL, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    let data = JSON.stringify({
+        "id": id
+    });
+    xhr.send(data);
+}
+
+
+
 const SIGN_UP_URL = "http://0.0.0.0:5002/v1/sign_on/";
 
 function create_account() {

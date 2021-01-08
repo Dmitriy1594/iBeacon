@@ -32,4 +32,10 @@ EXPOSE 5002
 CMD ["python", "app.py"]
 
 # docker build -t server_pi_beacon .
+# TEST
 # docker run -p 5002:5002 --env DEBUG=True --env SERVER_URL=192.168.31.19 --name server_pi_beacon server_pi_beacon:latest
+# docker run -p 5002:5002 --env DEBUG=True --env SERVER_URL=192.168.31.19 --name server_pi_beacon trueprogramdevelop/ibeacon:tagname
+# PROD
+# docker run -p 5002:5002 --env SERVER_URL=192.168.31.19 --name server_pi_beacon server_pi_beacon:latest
+# docker run -p 5002:5002 --env SERVER_URL=192.168.31.19 --name server_pi_beacon trueprogramdevelop/ibeacon:tagname
+
