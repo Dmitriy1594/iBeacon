@@ -90,12 +90,22 @@
                 <div class="input-group-append">
                     <div class="input-group-text">name: {{ pi['name'] }}</div>
                     <input type="text" class="form-control" id="{{ pi['name']|safe }}"
-                           placeholder="new name here">
+                           placeholder="new name here" value="{{ pi['name']|safe }}">
                 </div>
                 <div class="input-group-append">
                     <div class="input-group-text">price: {{ pi['price'] }}</div>
                     <input type="text" class="form-control" id="{{ pi['price']|safe }}"
-                           placeholder="new price here">
+                           placeholder="new price here" value="{{ pi['price']|safe }}">
+                </div>
+                <div class="input-group-append">
+                    <div class="input-group-text">meters_detection: {{ pi['meters_detection'] }}</div>
+                    <input type="text" class="form-control" id="{{ pi['meters_detection']|safe }}"
+                           placeholder="new price here" value="{{ pi['meters_detection']|safe }}">
+                </div>
+                <div class="input-group-append">
+                    <div class="input-group-text">scanning_seconds: {{ pi['scanning_seconds'] }}</div>
+                    <input type="text" class="form-control" id="{{ pi['scanning_seconds']|safe }}"
+                           placeholder="new price here" value="{{ pi['scanning_seconds']|safe }}">
                 </div>
                 <!--                    <div class="input-group-append">-->
                 <!--                        <div class="input-group-text">currencies: {{ pi['currencies'] }}</div>-->
@@ -107,7 +117,7 @@
 <!--                           placeholder="new active here">-->
                     <button type="button" class="btn btn-light btn-outline-dark w-60" onclick="turn_on('{{ pi['name']|safe }}')">Turn on</button>
                 </div>
-                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="save_changes('{{ pi['id']|safe }}', '{{ pi['name']|safe }}', '{{ pi['price']|safe }}')">Save changes
+                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="save_changes('{{ pi['id']|safe }}', '{{ pi['name']|safe }}', '{{ pi['price']|safe }}', '{{ pi['meters_detection']|safe }}', '{{ pi['scanning_seconds']|safe }}' )">Save changes
                 </button>
                 <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="update_settings('{{ pi['name']|safe }}', true)">Update settings</button>
             </div>

@@ -123,10 +123,12 @@ function set_null_count_visitors(name,) {
 
 const UPDATE_NP_BY_ID = "http://0.0.0.0:5002/v1/update_by_id/";
 
-function save_changes(id, name, price, reload= true) {
+function save_changes(id, name, price, meters_detection, scanning_seconds,  reload= true) {
     let new_name = document.getElementById(name).value;
     // parseFloat("554,20".replace(",", "."))
     let new_price = parseFloat(document.getElementById(price).value);
+    let new_meters_detection = parseFloat(document.getElementById(meters_detection).value);
+    let new_scanning_seconds = parseFloat(document.getElementById(scanning_seconds).value);
 
     let xhr = new XMLHttpRequest();
 
@@ -151,7 +153,9 @@ function save_changes(id, name, price, reload= true) {
         {
             "id": id,
             "name": new_name,
-            "price": new_price
+            "price": new_price,
+            "meters_detection": new_meters_detection,
+            "scanning_seconds": new_scanning_seconds,
         }
     );
     xhr.send(data);

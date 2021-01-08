@@ -94,6 +94,8 @@ class PIUpdateByID(BaseModel):
     id: int
     name: Optional[str] = None
     price: Optional[float] = None
+    meters_detection: Optional[float] = 1.0
+    scanning_seconds: Optional[float] = 5.0
 
 
 class PICreate(PIBase):
