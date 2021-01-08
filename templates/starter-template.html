@@ -30,6 +30,88 @@
             onclick="go_to_login_page()">Sign out
     </button>
 </nav>
+
+<div class="starter-template">
+    <h1>Create PI</h1>
+</div>
+<div class="container">
+    <div class="col-lg-12 col-md-6">
+        <div class="card flex-md-row mb-4 box-shadow h-md-250">
+            <div class="card-body d-flex flex-column align-items-start block_inline">
+
+                <div class="input-group-append">
+                    <div class="input-group-text">name</div>
+                    <input type="text" class="form-control" id="pi_name"
+                           placeholder="new value here" value="Product Name">
+                </div>
+
+                <div class="input-group-append">
+                    <div class="input-group-text">price</div>
+                    <input type="text" class="form-control" id="pi_price"
+                           placeholder="new value here" value="1000">
+                </div>
+
+                <div class="input-group-append">
+                    <div class="input-group-text">currencies</div>
+                    <input type="text" class="form-control" id="pi_currencies"
+                           placeholder="new value here" value='["RUB", "USD", "EUR", "GBP"]'>
+                </div>
+
+                <div class="input-group-append">
+                    <div class="input-group-text">count_visitors</div>
+                    <input type="text" class="form-control" id="pi_count_visitors"
+                           placeholder="new value here" value='0'>
+                </div>
+
+                <div class="input-group-append">
+                    <div class="input-group-text">address</div>
+                    <input type="text" class="form-control" id="pi_address"
+                           placeholder="new value here" value='B8:27:EB:97:87:63'>
+                </div>
+
+                <div class="input-group-append">
+                    <div class="input-group-text">uuid</div>
+                    <input type="text" class="form-control" id="pi_uuid"
+                           placeholder="new value here" value='00001200-0000-1000-8000-00805f9b34fb'>
+                </div>
+
+<!--                <div class="input-group-append">-->
+<!--                    <div class="input-group-text">locate_data</div>-->
+<!--                    <input type="text" class="form-control" id="pi_locate_data"-->
+<!--                           placeholder="new value here" value='locate_data'>-->
+<!--                </div>-->
+<!--                -->
+<!--                <div class="input-group-append">-->
+<!--                    <div class="input-group-text">active</div>-->
+<!--                    <input type="text" class="form-control" id="pi_active"-->
+<!--                           placeholder="new value here" value='false'>-->
+<!--                </div>-->
+
+                <div class="input-group-append">
+                    <div class="input-group-text">ip</div>
+                    <input type="text" class="form-control" id="pi_ip"
+                           placeholder="new value here" value='192.168.31.97'>
+                </div>
+
+                <div class="input-group-append">
+                    <div class="input-group-text">scanning_seconds</div>
+                    <input type="text" class="form-control" id="pi_scanning_seconds"
+                           placeholder="new value here" value='5.0'>
+                </div>
+
+                <div class="input-group-append">
+                    <div class="input-group-text">meters_detection</div>
+                    <input type="text" class="form-control" id="pi_meters_detection"
+                           placeholder="new value here" value='1.0'>
+                </div>
+
+                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="create_pi()">Create PI</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="starter-template">
     <h1>Active PI</h1>
 </div>
@@ -120,6 +202,7 @@
                 <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="save_changes('{{ pi['id']|safe }}', '{{ pi['name']|safe }}', '{{ pi['price']|safe }}', '{{ pi['meters_detection']|safe }}', '{{ pi['scanning_seconds']|safe }}' )">Save changes
                 </button>
                 <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="update_settings('{{ pi['name']|safe }}', true)">Update settings</button>
+                <button type="button" class="btn btn-light btn-outline-dark w-25" onclick="delete_pi('{{ pi['id']|safe }}', true)">Delete PI</button>
             </div>
             <div class="card-body d-flex flex-column align-items-start block_inline">
                 <strong class="d-inline-block mb-2 text-primary" id="count_visitors_{{ pi['uuid']|safe }}">Count Visitors: {{ pi['count_visitors'] }}</strong>

@@ -400,6 +400,19 @@ def create_beacon(
     return db_pi_beacon
 
 
+def delete_pi_by_id(db: Session, id: int,):
+    # get deleted
+    info = db.query(models.Raspberry).filter(
+        models.Raspberry.id == id,
+    ).first()
+    # delete
+    db.query(models.Raspberry).filter(
+        models.Raspberry.id == id,
+    ).delete()
+    db.commit()
+    return info
+
+
 # find beacons
 def get_beacon_by_device_name(
     db: Session,

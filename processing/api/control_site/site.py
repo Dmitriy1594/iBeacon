@@ -58,6 +58,17 @@ def create_pi(pi: schemas.PICreate, db: Session = Depends(get_db)):
     return new_pi
 
 
+# Delete
+@router.post(
+    f"{PATH_TO_API}" + "/delete_pi/",
+    response_model=schemas.PI,
+    tags=["create", "PI", "site"]
+)
+def delete_pi(pi: schemas.PIUpdateByID, db: Session = Depends(get_db)):
+    pi_id = pi.id
+    return crud.delete_pi_by_id(db, id=pi_id)
+
+
 # Get
 @router.post(
     f"{PATH_TO_API}" + "/get_pi_by_name/",
